@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="ushhak-pu">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.annunakicosmocrew.ushhak.models.Actor</class>
+        <class>com.annunakicosmocrew.ushhak.models.Director</class>
+        <class>com.annunakicosmocrew.ushhak.models.Studio</class>
+        <class>com.annunakicosmocrew.ushhak.models.Tag</class>
+        <class>com.annunakicosmocrew.ushhak.models.Video</class>
+        <class>com.annunakicosmocrew.ushhak.models.VideoActor</class>
+        <class>com.annunakicosmocrew.ushhak.models.VideoDirector</class>
+        <class>com.annunakicosmocrew.ushhak.models.VideoTag</class>
+        <class>com.annunakicosmocrew.ushhak.models.FolderPath</class>
+        <!-- Add other entity classes here -->
+        <properties>
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>-->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:hsqldb:file:hsql/ushhak;shutdown=true"/>
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+
+
+            <!-- HikariCP settings -->
+            <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider"/>
+            <property name="hibernate.hikari.maximumPoolSize" value="2"/>
+            <property name="hibernate.hikari.idleTimeout" value="300000"/>
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            <property name="hibernate.ejb.metamodel.generation" value="none"/>
+        </properties>
+    </persistence-unit>
+</persistence>
