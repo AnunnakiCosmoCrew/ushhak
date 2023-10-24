@@ -2,16 +2,12 @@ package com.annunakicosmocrew.ushhak.models;
 
 import com.annunakicosmocrew.ushhak.models.common.OpenableVideo;
 import com.annunakicosmocrew.ushhak.models.dto.VideoDTO;
-import com.annunakicosmocrew.ushhak.services.FolderPathService;
-import com.annunakicosmocrew.ushhak.util.FileMetadataExtractor;
-import com.annunakicosmocrew.ushhak.util.FileUtil;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -57,18 +53,6 @@ public class Video implements OpenableVideo {
         this.folderPath = folderPath;
     }
 
-    public static Video createVideoFromPath(Path videoPath) {
-        FolderPathService folderPathService = FolderPathService.getInstance();
-        FolderPath folderPath = folderPathService.getByPath(videoPath.toString());
-
-        if (FileUtil.isVideoFile(videoPath)) {
-            Date[] metadata = FileMetadataExtractor.extract(videoPath);
-            return new Video(videoPath.getFileName().toString(), folderPath, metadata[0], metadata[1]);
-        } else {
-            logger.warn("The file {} is not a video format or is corrupted.", videoPath);
-            return null;
-        }
-    }
 
 
     public String getFolderPathString() {

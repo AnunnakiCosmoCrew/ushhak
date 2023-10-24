@@ -22,5 +22,7 @@ public interface OpenableVideo {
     Set<VideoTag> getVideoTags();
     Video toVideo();
     VideoDTO toVideoDTO();
+    void setDateCreated(Date dateCreated);
+    void setLastModified(Date lastModified);
 
 }

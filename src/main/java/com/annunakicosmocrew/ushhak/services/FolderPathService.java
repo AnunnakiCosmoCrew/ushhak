@@ -3,12 +3,15 @@ package com.annunakicosmocrew.ushhak.services;
 import com.annunakicosmocrew.ushhak.db.DatabaseManager;
 import com.annunakicosmocrew.ushhak.db.EntityManagerWrapper;
 import com.annunakicosmocrew.ushhak.models.FolderPath;
+import com.annunakicosmocrew.ushhak.repositories.FolderPathRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -16,43 +19,38 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import static com.annunakicosmocrew.ushhak.util.FileUtil.calculateMaxDepth;
 
 
+@Service
 public class FolderPathService {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ushak-pu");
+
     private static final Logger logger = LoggerFactory.getLogger(FolderPathService.class);
+    private final FolderPathRepository folderPathRepository;
 
-
-    private FolderPathService() {
+    @Autowired
+    public FolderPathService(FolderPathRepository folderPathRepository) {
+        this.folderPathRepository = folderPathRepository;
     }
 
-    public static FolderPathService getInstance() {
-        return new FolderPathService();
-    }
 
     /**
      * Adds a path to the database.
      */
-    public void addPath(String path) {
-        Path pathToAdd = getAbsolutePath(Paths.get(path));
-        if(isDirectoryExitsEmpty(pathToAdd)) return;
-
-        FolderPath folderPath = new FolderPath(pathToAdd);
-
-        if (!pathExistsInDB(pathToAdd)) {
-            try (EntityManager em = emf.createEntityManager()) {
-
-                em.getTransaction().begin();
-                em.persist(folderPath);
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                logger.error("Failed to add path {}: ", path, e);
-                System.out.println("Failed to add path " + path);
-            }
-        }
+    public Optional<FolderPath> createPath(FolderPath folderPath) {
+        return folderPathRepository.findByPath(folderPath.getPath())
+                .map(existingFolderPath -> {
+                    logger.info("Folder path {} already exists", folderPath.getPath());
+                    return Optional.<FolderPath>empty();
+                })
+                .orElseGet(() -> {
+                    folderPathRepository.save(folderPath);
+                    return Optional.of(folderPath);
+                });
     }
+
 
     /**
      * Checks if the directory exists and is empty.
@@ -72,24 +70,6 @@ public class FolderPathService {
         return false;
     }
 
-    /**
-     * Checks if the path exists in the database.
-     *
-     * @param path the path to be checked
-     * @return true if the path exists, false otherwise
-     */
-    public boolean pathExistsInDB(Path path) {
-        boolean exists = false;
-        try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<FolderPath> query = em.createQuery("SELECT f FROM FolderPath f WHERE f.path = :path", FolderPath.class);
-            query.setParameter("path", path.toString());
-            exists = !query.getResultList().isEmpty();
-        } catch (Exception e) {
-            logger.error("Failed to check if path exists", e);
-            System.out.println("Failed to check if path exists");
-        }
-        return exists;
-    }
 
     /**
      * *Returns all the parent folder paths from the database.

@@ -1,10 +1,12 @@
 package com.annunakicosmocrew.ushhak.models.dto;
 
+import com.annunakicosmocrew.ushhak.models.FolderPath;
 import com.annunakicosmocrew.ushhak.models.Video;
 import com.annunakicosmocrew.ushhak.models.VideoTag;
 import com.annunakicosmocrew.ushhak.models.common.OpenableVideo;
 import lombok.Getter;
 
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +16,8 @@ import java.util.Set;
 public class VideoDTO implements OpenableVideo {
     private Integer videoId;
     private String fileName;
+    private Date dateCreated;
+    private Date lastModified;
     private Date lastOpened;
     private Integer timesOpened;
     private Integer rating;
@@ -28,7 +32,7 @@ public class VideoDTO implements OpenableVideo {
         this.fileName = fileName;
     }
 
-    public String getLastOpenedString(){
+    public String getLastOpenedString() {
         return lastOpened != null ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(lastOpened) : "";
     }
 
@@ -72,10 +76,13 @@ public class VideoDTO implements OpenableVideo {
         this.videoTagsDTO = videoTagsDTO;
     }
 
-    public Video toVideo(){
+    public Video toVideo() {
         Video video = new Video();
-        video.setVideoId(videoId);
+        if(videoId != null) video.setVideoId(videoId);
         video.setFileName(fileName);
+        video.setDateCreated(dateCreated);
+        video.setLastModified(lastModified);
+        video.setFolderPath(new FolderPath(Path.of(folderPathString)));
         video.setLastOpened(lastOpened);
         video.setTimesOpened(timesOpened);
         video.setRating(rating);
@@ -86,6 +93,16 @@ public class VideoDTO implements OpenableVideo {
     @Override
     public VideoDTO toVideoDTO() {
         return this;
+    }
+
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 
 
