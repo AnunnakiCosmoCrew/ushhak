@@ -116,15 +116,6 @@ public class Video implements OpenableVideo {
         this.videoTags = videoTags;
     }
 
-    @Override
-    public Video toVideo() {
-        return this;
-    }
-
-    @Override
-    public VideoDTO toVideoDTO() {
-        return toDTO(this);
-    }
 
     @Override
     public String toString() {

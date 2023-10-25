@@ -1,12 +1,9 @@
 package com.annunakicosmocrew.ushhak.models.dto;
 
-import com.annunakicosmocrew.ushhak.models.FolderPath;
-import com.annunakicosmocrew.ushhak.models.Video;
 import com.annunakicosmocrew.ushhak.models.VideoTag;
 import com.annunakicosmocrew.ushhak.models.common.OpenableVideo;
 import lombok.Getter;
 
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +20,7 @@ public class VideoDTO implements OpenableVideo {
     private Integer rating;
     private Set<VideoTag> videoTagsDTO;
     private String folderPathString;
+
 
     public void setFolderPathString(String folderPathString) {
         this.folderPathString = folderPathString;
@@ -76,24 +74,6 @@ public class VideoDTO implements OpenableVideo {
         this.videoTagsDTO = videoTagsDTO;
     }
 
-    public Video toVideo() {
-        Video video = new Video();
-        if(videoId != null) video.setVideoId(videoId);
-        video.setFileName(fileName);
-        video.setDateCreated(dateCreated);
-        video.setLastModified(lastModified);
-        video.setFolderPath(new FolderPath(Path.of(folderPathString)));
-        video.setLastOpened(lastOpened);
-        video.setTimesOpened(timesOpened);
-        video.setRating(rating);
-        video.setVideoTags(videoTagsDTO);
-        return video;
-    }
-
-    @Override
-    public VideoDTO toVideoDTO() {
-        return this;
-    }
 
     @Override
     public void setDateCreated(Date dateCreated) {
