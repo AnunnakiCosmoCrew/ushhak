@@ -1,36 +1,57 @@
 package com.annunakicosmocrew.ushhak.models;
 
 import com.annunakicosmocrew.ushhak.models.common.OpenableVideo;
-import com.annunakicosmocrew.ushhak.models.dto.VideoDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
 public class Video implements OpenableVideo {
     private static final Logger logger = LoggerFactory.getLogger(Video.class);
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer videoId;
     @Column(nullable = false)
     private String fileName;
+    private String title;
+    @Column(nullable = true)
+    private long fileSize;
+    private String description;
+
+    // File System Metadata
     @Column(nullable = false)
     private Date dateCreated;
-    private Date lastOpened;
     @Column(nullable = false)
     private Date lastModified;
+    private Date lastOpened;
     private Integer timesOpened;
     private Integer rating;
+    private String format;
+
+    // Technical Information
+    private String codec;
+    private String resolution;
+    @Column(nullable = true)
+    private double frameRate;
+    @Column(nullable = true)
+    private int bitRate;
+    private Duration duration;
+    private String aspectRatio;
+
+    // Relationships and other data
     @ManyToOne
     private Studio studio;
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,18 +64,6 @@ public class Video implements OpenableVideo {
     @JoinColumn(name = "folder_path_id", nullable = false)
     private FolderPath folderPath;
 
-    public Video() {
-    }
-
-    private Video(String fileName, FolderPath folderPath, Date dateCreated, Date lastModified) {
-        this.fileName = fileName;
-        this.dateCreated = dateCreated;
-        this.lastModified = lastModified;
-        this.folderPath = folderPath;
-    }
-
-
-
     public String getFolderPathString() {
         return folderPath.getPath();
     }
@@ -63,16 +72,8 @@ public class Video implements OpenableVideo {
         this.folderPath = folderPath;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public void setLastOpened(Date lastOpened) {
-        this.lastOpened = lastOpened;
     }
 
     public void setLastModified(Date lastModified) {
@@ -92,21 +93,6 @@ public class Video implements OpenableVideo {
         this.videoTags = tags;
     }
 
-
-    public VideoDTO toDTO(Video video) {
-        VideoDTO dto = new VideoDTO();
-        dto.setVideoId(video.getVideoId());
-        dto.setFileName(video.getFileName());
-        dto.setLastOpened(video.getLastOpened());
-        dto.setTimesOpened(video.getTimesOpened());
-        dto.setRating(video.getRating());
-        dto.setVideoTagsDTO(new HashSet<>(video.getVideoTags()));
-        Optional.ofNullable(video.getFolderPath())
-                .ifPresent(path -> dto.setFolderPathString(path.getPath()));
-
-        return dto;
-    }
-
     @Override
     public String getLastOpenedString() {
         return lastOpened != null ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(lastOpened) : "";
@@ -124,8 +110,6 @@ public class Video implements OpenableVideo {
                 " - Last Opened: " + lastOpened +
                 " - Times Opened: " + timesOpened;
     }
-
-
 
 
 }

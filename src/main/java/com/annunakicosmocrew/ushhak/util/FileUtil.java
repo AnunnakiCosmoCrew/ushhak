@@ -68,5 +68,24 @@ public class FileUtil {
         return localMaxDepth[0];
     }
 
+    public static String removeExtension(String fileName) {
+        if (fileName == null) return null;
+
+        int lastIndexOfDot = fileName.lastIndexOf('.');
+        if (lastIndexOfDot == -1) return fileName;  // No extension found
+
+        return fileName.substring(0, lastIndexOfDot);
+    }
+
+    public static String fileNameToTitle(String fileName) {
+        if (fileName == null) return null;
+
+        String title = removeExtension(fileName);
+        title = title.replaceAll("[^a-zA-Z0-9\\s]", " ");
+        title = title.replaceAll("\\s+", " ");
+        title = title.trim();
+        return title;
+    }
+
 
 }

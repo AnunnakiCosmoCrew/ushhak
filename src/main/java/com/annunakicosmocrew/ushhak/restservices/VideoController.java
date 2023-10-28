@@ -20,15 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class VideoController {
     private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
     private final VideoService videoService;
+    private final FileMetadataService fileMetadataService;
 
     @Autowired
-    public VideoController(VideoService videoService) {
+    public VideoController(VideoService videoService, FileMetadataService fileMetadataService) {
         this.videoService = videoService;
+        this.fileMetadataService = fileMetadataService;
     }
 
     @PostMapping("/add-video")
     public ResponseEntity<Video> addVideo(@Valid @RequestBody VideoDTO videoDTO) {
-        VideoDTO updatedVideoDTO = FileMetadataService.getVideoMetadata(videoDTO)
+        VideoDTO updatedVideoDTO = fileMetadataService.getVideoMetadata(videoDTO)
                 .map(updatedDTO -> {
                     logger.info("Successfully got metadata for video {}", updatedDTO.getFileName());
                     return updatedDTO;
